@@ -1,22 +1,21 @@
+package game;
+
+import io.*;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.*;
-import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
-import org.lwjgl.system.*;
+import render.*;
+import world.TileRenderer;
 
-import java.nio.*;
-
-import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryStack.*;
-import static org.lwjgl.system.MemoryUtil.*;
 
 public class Main {
     // The window handle
     private long window;
+    private Window win;
 
     private Vector2f pos = new Vector2f();
     final private float STEP = 1f;
@@ -28,8 +27,9 @@ public class Main {
         loop();
 
         // Free the window callbacks and destroy the window
-        glfwFreeCallbacks(window);
-        glfwDestroyWindow(window);
+        //glfwFreeCallbacks(window);
+        //glfwDestroyWindow(window);
+        win.destroy();
 
         // Terminate GLFW and free the error callback
         glfwTerminate();
@@ -39,21 +39,31 @@ public class Main {
     private void init() {
         // Set up an error callback. The default implementation
         // will print the error message in System.err.
-        GLFWErrorCallback.createPrint(System.err).set();
+        //GLFWErrorCallback.createPrint(System.err).set();
+        Window.setCallbacks();
 
         // Initialize GLFW. Most GLFW functions will not work before doing this.
         if ( !glfwInit() )
             throw new IllegalStateException("Unable to initialize GLFW");
 
+        // Creating io.Window Object
+        win = new Window();
+        win.setSize(600, 600);
+        win.setFullscreen(false);
+
+        win.createWindow("Hello World!!!");
+
+        //glfwSetKeyCallback(win.getWindow(), this::key);
+
         // Configure GLFW
-        glfwDefaultWindowHints(); // optional, the current window hints are already the default
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+        //glfwDefaultWindowHints(); // optional, the current window hints are already the default
+        //glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
+        //glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
         // Create the window
-        window = glfwCreateWindow(600, 600, "Hello World!", NULL, NULL);
-        if ( window == NULL )
-            throw new RuntimeException("Failed to create the GLFW window");
+        //window = glfwCreateWindow(600, 600, "Hello World!", NULL, NULL);
+        //if ( window == NULL )
+        //    throw new RuntimeException("Failed to create the GLFW window");
 
         // Set up a key callback. It will be called every time a key is pressed, repeated or released.
         /*glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
@@ -61,34 +71,34 @@ public class Main {
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
         });*/
 
-        glfwSetKeyCallback(window, this::key);
+        //glfwSetKeyCallback(window, this::key);
 
         // Get the thread stack and push a new frame
-        try ( MemoryStack stack = stackPush() ) {
-            IntBuffer pWidth = stack.mallocInt(1); // int*
-            IntBuffer pHeight = stack.mallocInt(1); // int*
+        //try ( MemoryStack stack = stackPush() ) {
+        //    IntBuffer pWidth = stack.mallocInt(1); // int*
+        //    IntBuffer pHeight = stack.mallocInt(1); // int*
 
             // Get the window size passed to glfwCreateWindow
-            glfwGetWindowSize(window, pWidth, pHeight);
+        //    glfwGetWindowSize(window, pWidth, pHeight);
 
             // Get the resolution of the primary monitor
-            GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        //    GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
             // Center the window
-            glfwSetWindowPos(
-                    window,
-                    (vidmode.width() - pWidth.get(0)) / 2,
-                    (vidmode.height() - pHeight.get(0)) / 2
-            );
-        } // the stack frame is popped automatically
+        //    glfwSetWindowPos(
+        //            window,
+        //            (vidmode.width() - pWidth.get(0)) / 2,
+        //            (vidmode.height() - pHeight.get(0)) / 2
+        //    );
+        //} // the stack frame is popped automatically
 
         // Make the OpenGL context current
-        glfwMakeContextCurrent(window);
+        //glfwMakeContextCurrent(window);
         // Enable v-sync
         //glfwSwapInterval(1);
 
         // Make the window visible
-        glfwShowWindow(window);
+        //glfwShowWindow(window);
     }
 
     private void loop() {
@@ -103,40 +113,42 @@ public class Main {
         // glOrtho(-300, 300, -300, 300, 0, 0);
         // glMatrixMode(GL_MODELVIEW);
 
-        Camera camera = new Camera(600, 600);
+        Camera camera = new Camera(win.getWidth(), win.getHeight());
 
         glEnable(GL_TEXTURE_2D);
 
-        float[] vertices = new float[] {
-            -0.5f, 0.5f, 0,  // TOP LEFT     0
-            0.5f, 0.5f, 0,   // TOP RIGHT    1
-            0.5f, -0.5f, 0,  // BOTTOM RIGHT 2
-            -0.5f, -0.5f, 0, // BOTTOM LEFT  3
-        };
+        TileRenderer tiles = new TileRenderer();
 
-        float[] texture = new float[] {
-                0, 0, // TOP LEFT
-                1, 0, // TOP RIGHT
-                1, 1, // BOTTOM RIGHT
-                0, 1  // BOTTOM LEFT
-        };
-
-        int[] indices = new int[] {
-                0, 1, 2,
-                0, 2, 3
-        };
-
-        Model model = new Model(vertices, texture, indices);
+//        float[] vertices = new float[] {
+//            -0.5f, 0.5f, 0,  // TOP LEFT     0
+//            0.5f, 0.5f, 0,   // TOP RIGHT    1
+//            0.5f, -0.5f, 0,  // BOTTOM RIGHT 2
+//            -0.5f, -0.5f, 0, // BOTTOM LEFT  3
+//        };
+//
+//        float[] texture = new float[] {
+//                0, 0, // TOP LEFT
+//                1, 0, // TOP RIGHT
+//                1, 1, // BOTTOM RIGHT
+//                0, 1  // BOTTOM LEFT
+//        };
+//
+//        int[] indices = new int[] {
+//                0, 1, 2,
+//                0, 2, 3
+//        };
+//
+//        Model model = new Model(vertices, texture, indices);
 
         Shader shader = new Shader("shader");
 
-        Texture tex = new Texture("./res/SimpleSquareTexture.png");
+        Texture tex = new Texture("SimpleSquareTexture.png");
 
         //Matrix4f projection = new Matrix4f()
                 //.ortho2D(-300, 300, -300, 300);
         Matrix4f scale = new Matrix4f()
-                .translate(new Vector3f(100, 0, 0))
-                .scale(100);
+                .translate(new Vector3f(0, 0, 0))
+                .scale(16);
 
         Matrix4f target = new Matrix4f();
 
@@ -152,7 +164,7 @@ public class Main {
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
-        while ( !glfwWindowShouldClose(window) ) {
+        while ( !win.shouldClose() ) { // !glfwWindowShouldClose(window)
             boolean can_render = false;
 
             double time_2 = Timer.getTime();
@@ -167,9 +179,14 @@ public class Main {
                 can_render = true;
                 target = scale;
 
+                if (win.getInput().isKeyPressed(GLFW_KEY_ESCAPE)) {
+                    System.out.println("ESCAPED!");
+                }
+
                 // Poll for window events. The key callback above will only be
                 // invoked during this call.
-                glfwPollEvents();
+                //glfwPollEvents();
+                win.update();
                 if (frame_time >= 1.0) {
                     frame_time = 0;
                     System.out.println("FPS: " + frames);
@@ -186,15 +203,23 @@ public class Main {
 
             camera.setPosition(new Vector3f(pos, 0));
 
-            shader.bind();
-            shader.setUniform("sampler", 0);
-            shader.setUniform("projection", camera.getProjection().mul(target));
-            tex.bind(0);
-            model.render();
+//            shader.bind();
+//            shader.setUniform("sampler", 0);
+//            shader.setUniform("projection", camera.getProjection().mul(target));
+//            tex.bind(0);
+//            model.render();
+
+            for(int i = 0; i < 8; i++) {
+                for (int j = 0; j < 4; j++)
+                {
+                    tiles.renderTile((byte) 0, i, j, shader, scale, camera);
+                }
+            }
 
             frames++;
 
-            glfwSwapBuffers(window); // swap the color buffers
+            win.swapBuffers();
+            //glfwSwapBuffers(window); // swap the color buffers
         }
     }
 

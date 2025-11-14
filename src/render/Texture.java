@@ -1,3 +1,5 @@
+package render;
+
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
 import org.lwjgl.BufferUtils;
@@ -16,7 +18,7 @@ public class Texture {
     public Texture(String filename) {
         BufferedImage bi;
         try {
-            bi = ImageIO.read(new File(filename));
+            bi = ImageIO.read(new File("./res/"+filename));
             width = bi.getWidth();
             height = bi.getHeight();
 
