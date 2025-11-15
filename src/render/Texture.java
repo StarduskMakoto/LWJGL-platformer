@@ -3,6 +3,7 @@ package render;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
 import org.lwjgl.BufferUtils;
+import utils.AppUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -47,6 +48,8 @@ public class Texture {
 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
+            AppUtils.cleaner.register(this, new CleaningAction(id));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -56,6 +59,20 @@ public class Texture {
         if (sampler >= 0 && sampler <= 31) {
             glActiveTexture(GL_TEXTURE0 + sampler);
             glBindTexture(GL_TEXTURE_2D, id);
+        }
+    }
+
+    static class CleaningAction implements Runnable {
+        private int id;
+
+        public CleaningAction(int id) {
+            this.id = id;
+        }
+
+        @Override
+        public void run() {
+            glDeleteTextures(id);
+            System.out.println("Cleaned Texture of id ["+id+"]");
         }
     }
 }

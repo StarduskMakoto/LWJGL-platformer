@@ -1,24 +1,22 @@
 package game;
 
 import io.*;
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 import render.*;
-import world.TileRenderer;
+import world.*;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Main {
     // The window handle
-    private long window;
-    private Window win;
+    //private long window;
+    private Window window;
 
-    private Vector2f pos = new Vector2f();
-    final private float STEP = 1f;
+    //private Vector2f pos = new Vector2f();
+    final private float STEP = 3f;
 
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -29,7 +27,7 @@ public class Main {
         // Free the window callbacks and destroy the window
         //glfwFreeCallbacks(window);
         //glfwDestroyWindow(window);
-        win.destroy();
+        window.destroy();
 
         // Terminate GLFW and free the error callback
         glfwTerminate();
@@ -47,11 +45,11 @@ public class Main {
             throw new IllegalStateException("Unable to initialize GLFW");
 
         // Creating io.Window Object
-        win = new Window();
-        win.setSize(600, 600);
-        win.setFullscreen(false);
+        window = new Window();
+        window.setSize(600, 600);
+        window.setFullscreen(false);
 
-        win.createWindow("Hello World!!!");
+        window.createWindow("Hello World!!!");
 
         //glfwSetKeyCallback(win.getWindow(), this::key);
 
@@ -113,7 +111,7 @@ public class Main {
         // glOrtho(-300, 300, -300, 300, 0, 0);
         // glMatrixMode(GL_MODELVIEW);
 
-        Camera camera = new Camera(win.getWidth(), win.getHeight());
+        Camera camera = new Camera(window.getWidth(), window.getHeight());
 
         glEnable(GL_TEXTURE_2D);
 
@@ -146,11 +144,16 @@ public class Main {
 
         //Matrix4f projection = new Matrix4f()
                 //.ortho2D(-300, 300, -300, 300);
-        Matrix4f scale = new Matrix4f()
-                .translate(new Vector3f(0, 0, 0))
-                .scale(16);
+//        Matrix4f scale = new Matrix4f()
+//                .translate(new Vector3f(0, 0, 0))
+//                .scale(16);
+//
+//        Matrix4f target = new Matrix4f();
 
-        Matrix4f target = new Matrix4f();
+        World world = new World();
+
+        world.setTile(Tile.test2, 0, 0);
+        world.setTile(Tile.test2, 63, 63);
 
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -164,7 +167,7 @@ public class Main {
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
-        while ( !win.shouldClose() ) { // !glfwWindowShouldClose(window)
+        while ( !window.shouldClose() ) { // !glfwWindowShouldClose(window)
             boolean can_render = false;
 
             double time_2 = Timer.getTime();
@@ -177,16 +180,19 @@ public class Main {
             while (unprocessed >= frame_cap) {
                 unprocessed -= frame_cap;
                 can_render = true;
-                target = scale;
+                //target = scale;
 
-                if (win.getInput().isKeyPressed(GLFW_KEY_ESCAPE)) {
-                    System.out.println("ESCAPED!");
-                }
+//                if (win.getInput().isKeyPressed(GLFW_KEY_ESCAPE)) {
+//                    System.out.println("ESCAPED!");
+//                }
+
+                handleInputs(camera);
+
 
                 // Poll for window events. The key callback above will only be
                 // invoked during this call.
                 //glfwPollEvents();
-                win.update();
+                window.update();
                 if (frame_time >= 1.0) {
                     frame_time = 0;
                     System.out.println("FPS: " + frames);
@@ -201,46 +207,52 @@ public class Main {
             //projection.rotate(-0.05f, 0, 0, 1);
             //projection.mul(scale, target);
 
-            camera.setPosition(new Vector3f(pos, 0));
-
 //            shader.bind();
 //            shader.setUniform("sampler", 0);
 //            shader.setUniform("projection", camera.getProjection().mul(target));
 //            tex.bind(0);
 //            model.render();
 
-            for(int i = 0; i < 8; i++) {
-                for (int j = 0; j < 4; j++)
-                {
-                    tiles.renderTile((byte) 0, i, j, shader, scale, camera);
-                }
-            }
+//            for(int i = 0; i < 8; i++) {
+//                for (int j = 0; j < 4; j++)
+//                {
+//                    tiles.renderTile((byte) 0, i, j, shader, scale, camera);
+//                }
+//            }
+
+            //camera.setPosition(new Vector3f(pos, 0));
+
+            world.correctCamera(camera, window);
+
+            world.render(tiles, shader, camera, window);
 
             frames++;
 
-            win.swapBuffers();
+            window.swapBuffers();
             //glfwSwapBuffers(window); // swap the color buffers
         }
     }
 
-    private void key(long window, int key, int scancode, int action, int mods) {
-        switch (key) {
-            case GLFW_KEY_ESCAPE:
-                if (action == GLFW_RELEASE )
-                    glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
-                break;
-            case GLFW_KEY_W:
-                pos.y -= STEP;
-                break;
-            case GLFW_KEY_A:
-                pos.x += STEP;
-                break;
-            case GLFW_KEY_S:
-                pos.y += STEP;
-                break;
-            case GLFW_KEY_D:
-                pos.x -= STEP;
-                break;
+    private void handleInputs(Camera camera) {
+        if (window.getInput().isKeyPressed(GLFW_KEY_ESCAPE)) {
+            glfwSetWindowShouldClose(window.getWindow(), true); // We will detect this in the rendering loop
+        }
+
+        if (window.getInput().isKeyDown(GLFW_KEY_W)) {
+            //pos.y -= STEP;
+            camera.addPosition(new Vector3f(0, -STEP, 0));
+        }
+        if (window.getInput().isKeyDown(GLFW_KEY_A)) {
+            //pos.x += STEP;
+            camera.addPosition(new Vector3f(STEP, 0, 0));
+        }
+        if (window.getInput().isKeyDown(GLFW_KEY_S)) {
+            //pos.y += STEP;
+            camera.addPosition(new Vector3f(0, STEP, 0));
+        }
+        if (window.getInput().isKeyDown(GLFW_KEY_D)) {
+            //pos.x -= STEP;
+            camera.addPosition(new Vector3f(-STEP, 0, 0));
         }
 
     }

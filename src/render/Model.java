@@ -1,6 +1,7 @@
 package render;
 
 import org.lwjgl.BufferUtils;
+import utils.AppUtils;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -38,6 +39,8 @@ public class Model {
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        AppUtils.cleaner.register(this, new CleaningAction(v_id, t_id, i_id));
     }
 
     public void render(){
@@ -65,5 +68,25 @@ public class Model {
         buffer.put(data);
         buffer.flip();
         return buffer;
+    }
+
+    static class CleaningAction implements Runnable {
+        private int v_id;
+        private int t_id;
+        private int i_id;
+
+        public CleaningAction(int v_id, int t_id, int i_id) {
+            this.v_id = v_id;
+            this.t_id = t_id;
+            this.i_id = i_id;
+        }
+
+        @Override
+        public void run() {
+            glDeleteBuffers(v_id);
+            glDeleteBuffers(t_id);
+            glDeleteBuffers(i_id);
+            System.out.println("Cleaned Model of v_id ["+v_id+"], t_id ["+t_id+"] and i_id ["+i_id+"]");
+        }
     }
 }

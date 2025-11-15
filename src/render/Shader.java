@@ -2,6 +2,7 @@ package render;
 
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
+import utils.AppUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -52,6 +53,8 @@ public class Shader {
             System.err.println(glGetProgramInfoLog(program));
             System.exit(1);
         }
+
+        AppUtils.cleaner.register(this, new CleaningAction(program, vertex_shader, frag_shader));
     }
 
     public void setUniform(String name, int value) {
@@ -88,5 +91,27 @@ public class Shader {
         }
 
         return string.toString();
+    }
+
+    static class CleaningAction implements Runnable {
+        private int program;
+        private int vs;
+        private int fs;
+
+        public CleaningAction(int program, int vs, int fs) {
+            this.program = program;
+            this.vs = vs;
+            this.fs = fs;
+        }
+
+        @Override
+        public void run() {
+            glDetachShader(program, vs);
+            glDetachShader(program, fs);
+            glDeleteShader(vs);
+            glDeleteShader(fs);
+            glDeleteProgram(program);
+            System.out.println("Cleaned Shader of program ["+program+"]");
+        }
     }
 }
