@@ -1,9 +1,12 @@
 package game;
 
+import entity.Player;
 import io.*;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
+import physics.AABB;
 import render.*;
 import world.*;
 
@@ -107,9 +110,13 @@ public class Main {
         // bindings available for use.
         GL.createCapabilities();
 
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         // glMatrixMode(GL_PROJECTION);
         // glOrtho(-300, 300, -300, 300, 0, 0);
         // glMatrixMode(GL_MODELVIEW);
+
 
         Camera camera = new Camera(window.getWidth(), window.getHeight());
 
@@ -117,43 +124,14 @@ public class Main {
 
         TileRenderer tiles = new TileRenderer();
 
-//        float[] vertices = new float[] {
-//            -0.5f, 0.5f, 0,  // TOP LEFT     0
-//            0.5f, 0.5f, 0,   // TOP RIGHT    1
-//            0.5f, -0.5f, 0,  // BOTTOM RIGHT 2
-//            -0.5f, -0.5f, 0, // BOTTOM LEFT  3
-//        };
-//
-//        float[] texture = new float[] {
-//                0, 0, // TOP LEFT
-//                1, 0, // TOP RIGHT
-//                1, 1, // BOTTOM RIGHT
-//                0, 1  // BOTTOM LEFT
-//        };
-//
-//        int[] indices = new int[] {
-//                0, 1, 2,
-//                0, 2, 3
-//        };
-//
-//        Model model = new Model(vertices, texture, indices);
-
         Shader shader = new Shader("shader");
 
-        Texture tex = new Texture("SimpleSquareTexture.png");
+        World world = new World("Level1Test");
 
-        //Matrix4f projection = new Matrix4f()
-                //.ortho2D(-300, 300, -300, 300);
-//        Matrix4f scale = new Matrix4f()
-//                .translate(new Vector3f(0, 0, 0))
-//                .scale(16);
-//
-//        Matrix4f target = new Matrix4f();
+        Player player = new Player();
 
-        World world = new World();
-
-        world.setTile(Tile.test2, 0, 0);
-        world.setTile(Tile.test2, 63, 63);
+        //world.setTile(Tile.test2, 0, 0);
+        //world.setTile(Tile.test2, 63, 63);
 
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -222,9 +200,13 @@ public class Main {
 
             //camera.setPosition(new Vector3f(pos, 0));
 
+            player.update((float) frame_cap, window, camera, world);
+
             world.correctCamera(camera, window);
 
             world.render(tiles, shader, camera, window);
+
+            player.render(shader, camera);
 
             frames++;
 
@@ -238,22 +220,22 @@ public class Main {
             glfwSetWindowShouldClose(window.getWindow(), true); // We will detect this in the rendering loop
         }
 
-        if (window.getInput().isKeyDown(GLFW_KEY_W)) {
-            //pos.y -= STEP;
-            camera.addPosition(new Vector3f(0, -STEP, 0));
-        }
-        if (window.getInput().isKeyDown(GLFW_KEY_A)) {
-            //pos.x += STEP;
-            camera.addPosition(new Vector3f(STEP, 0, 0));
-        }
-        if (window.getInput().isKeyDown(GLFW_KEY_S)) {
-            //pos.y += STEP;
-            camera.addPosition(new Vector3f(0, STEP, 0));
-        }
-        if (window.getInput().isKeyDown(GLFW_KEY_D)) {
-            //pos.x -= STEP;
-            camera.addPosition(new Vector3f(-STEP, 0, 0));
-        }
+//        if (window.getInput().isKeyDown(GLFW_KEY_W)) {
+//            //pos.y -= STEP;
+//            camera.addPosition(new Vector3f(0, -STEP, 0));
+//        }
+//        if (window.getInput().isKeyDown(GLFW_KEY_A)) {
+//            //pos.x += STEP;
+//            camera.addPosition(new Vector3f(STEP, 0, 0));
+//        }
+//        if (window.getInput().isKeyDown(GLFW_KEY_S)) {
+//            //pos.y += STEP;
+//            camera.addPosition(new Vector3f(0, STEP, 0));
+//        }
+//        if (window.getInput().isKeyDown(GLFW_KEY_D)) {
+//            //pos.x -= STEP;
+//            camera.addPosition(new Vector3f(-STEP, 0, 0));
+//        }
 
     }
 
