@@ -76,6 +76,10 @@ public class World {
         world.scale(scale);
     }
 
+    public Matrix4f getWorldMatrix() {
+        return world;
+    }
+
     public void render(TileRenderer render, Shader shader, Camera camera, Window window) {
         int posX = ((int)camera.getPosition().x + (window.getWidth()/2)) / (scale * 2);
         int posY = ((int)camera.getPosition().y - (window.getHeight()/2)) / (scale * 2);

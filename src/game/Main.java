@@ -1,6 +1,8 @@
 package game;
 
+import entity.Entity;
 import entity.Player;
+import entity.Transform;
 import io.*;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -123,12 +125,15 @@ public class Main {
         glEnable(GL_TEXTURE_2D);
 
         TileRenderer tiles = new TileRenderer();
+        Entity.initAsset();
 
         Shader shader = new Shader("shader");
 
         World world = new World("Level1Test");
 
-        Player player = new Player();
+        Transform p_transform = new Transform();
+        p_transform.scale = new Vector3f(1, 2, 0);
+        Player player = new Player(p_transform, new Vector2f(1));
 
         //world.setTile(Tile.test2, 0, 0);
         //world.setTile(Tile.test2, 63, 63);
@@ -206,13 +211,15 @@ public class Main {
 
             world.render(tiles, shader, camera, window);
 
-            player.render(shader, camera);
+            player.render(shader, camera, world);
 
             frames++;
 
             window.swapBuffers();
             //glfwSwapBuffers(window); // swap the color buffers
         }
+
+        Entity.deleteAsset();
     }
 
     private void handleInputs(Camera camera) {
