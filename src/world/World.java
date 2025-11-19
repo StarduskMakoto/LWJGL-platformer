@@ -1,10 +1,14 @@
 package world;
 
+import entity.Entity;
+import entity.Player;
+import entity.Transform;
 import io.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import physics.AABB;
+import render.Animation;
 import render.Camera;
 import render.Shader;
 
@@ -12,11 +16,14 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class World {
     private final int view = 24;
     private byte[] tiles;
     private AABB[] bounding_boxes;
+    private List<Entity> entities;
     private int width;
     private int height;
     private int scale;
@@ -37,6 +44,7 @@ public class World {
 
             tiles = new byte[width * height];
             bounding_boxes = new AABB[width * height];
+            entities = new ArrayList<>();
 
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
@@ -55,6 +63,21 @@ public class World {
                     setTile(t, x, y);
                 }
             }
+
+            //TODO
+            Transform p_transform = new Transform();
+            p_transform.scale = new Vector3f(1, 2, 0);
+            entities.add(new Player(p_transform, new Vector2f(1)));
+
+            Transform test_transform = new Transform();
+            test_transform.pos.set(5 * 2, -4 * 2, 0);
+            entities.add(new Entity(new Animation(1, 1, "CharacterWalkFrame"),
+                    test_transform, new Vector2f(1)){
+                @Override
+                public void update(float delta, Window window, Camera camera, World world) {
+                    move(new Vector2f(5*delta, 0));
+                }
+            });
 
             this.world = new Matrix4f().setTranslation(new Vector3f(0));
             this.world.scale(scale);
@@ -92,6 +115,20 @@ public class World {
             }
         }
 
+        for(Entity entity : entities) {
+            entity.render(shader, camera, this);
+        }
+
+    }
+
+    public void update(float delta, Window window, Camera camera) {
+        for(Entity entity : entities) {
+            entity.update(delta, window, camera, this);
+        }
+
+        for(int i = 0; i < entities.size(); i++) {
+            entities.get(i).collideWithWorld(this);
+        }
     }
 
     public void correctCamera(Camera camera, Window window) {

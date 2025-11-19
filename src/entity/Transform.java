@@ -15,6 +15,8 @@ public class Transform {
     public Matrix4f getProjection(Matrix4f target) {
         target.scale(scale);
         target.translate(pos);
+
+
         return target;
     }
 }

@@ -131,9 +131,9 @@ public class Main {
 
         World world = new World("Level1Test");
 
-        Transform p_transform = new Transform();
-        p_transform.scale = new Vector3f(1, 2, 0);
-        Player player = new Player(p_transform, new Vector2f(1));
+//        Transform p_transform = new Transform();
+//        p_transform.scale = new Vector3f(1, 2, 0);
+//        Player player = new Player(p_transform, new Vector2f(1));
 
         //world.setTile(Tile.test2, 0, 0);
         //world.setTile(Tile.test2, 63, 63);
@@ -205,13 +205,14 @@ public class Main {
 
             //camera.setPosition(new Vector3f(pos, 0));
 
-            player.update((float) frame_cap, window, camera, world);
+            //player.update((float) frame_cap, window, camera, world);
+            world.update((float) frame_cap, window, camera);
 
             world.correctCamera(camera, window);
 
             world.render(tiles, shader, camera, window);
 
-            player.render(shader, camera, world);
+            //player.render(shader, camera, world);
 
             frames++;
 

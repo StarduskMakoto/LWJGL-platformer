@@ -14,6 +14,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
 public class Player extends Entity {
     public Player(Transform transform, Vector2f hitbox) {
         super(new Animation(4, 10, "CharacterWalkFrame"), transform, hitbox);
+        //this.transform.scale = new Vector3f(1, 2, 0);
     }
 
     @Override
@@ -35,7 +36,6 @@ public class Player extends Entity {
 
         this.move(movement);
 
-        super.update(delta, window, camera, world);
 
         Vector3f target = new Vector3f();
         transform.scale.mul(world.getScale(), target);

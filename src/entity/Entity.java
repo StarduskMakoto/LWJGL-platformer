@@ -15,10 +15,10 @@ import world.World;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
 
-public class Entity {
+public abstract class Entity {
     private static Model model;
-    private AABB bounding_box;
-    private Animation texture;
+    protected AABB bounding_box;
+    protected Animation texture;
     protected Transform transform;
     protected float SPEED = 10f;
 
@@ -36,7 +36,7 @@ public class Entity {
         bounding_box.getCenter().set(transform.pos.x, transform.pos.y);
     }
 
-    public void update(float delta, Window window, Camera camera, World world) {
+    public void collideWithWorld(World world) {
         //System.out.println((int)((transform.pos.y) + 1f - (5/2)));
 
         AABB[] boxes = new AABB[25];
@@ -59,6 +59,8 @@ public class Entity {
             }
         }
     }
+
+    public abstract void update(float delta, Window window, Camera camera, World world);
 
     public void render(Shader shader, Camera camera, World world) {
         Matrix4f target = camera.getProjection();
