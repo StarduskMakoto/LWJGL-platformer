@@ -1,5 +1,6 @@
 package entity;
 
+import assets.Assets;
 import io.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -16,18 +17,34 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
 
 public abstract class Entity {
-    private static Model model;
     protected AABB bounding_box;
-    protected Animation texture;
+    protected Animation[] animations;
+    private int use_animation;
+
     protected Transform transform;
     protected float SPEED = 10f;
 
-    public Entity(Animation animation, Transform transform, Vector2f hitbox) {
-        this.texture = animation;
+    public Entity(int max_animations, Transform transform, Vector2f hitbox) {
+        this.animations = new Animation[max_animations];
+        this.use_animation = 0;
 
         this.transform = transform;
 
         bounding_box = new AABB(new Vector2f(transform.pos.x, transform.pos.y), hitbox);
+    }
+
+    protected void setAnimation(int index, Animation animation) {
+        if (index >= this.animations.length) {
+            throw new ArrayIndexOutOfBoundsException("setAnimation index [" + index + "] is out of Bounds");
+        }
+        animations[index] = animation;
+    }
+
+    public void useAnimation(int index) {
+        if (index >= this.animations.length) {
+            throw new ArrayIndexOutOfBoundsException("useAnimation index [" + index + "] is out of Bounds");
+        }
+        this.use_animation = index;
     }
 
     public void move(Vector2f direction) {
@@ -60,6 +77,19 @@ public abstract class Entity {
         }
     }
 
+    public void collideWithEntity(Entity entity) {
+        Collision collision = bounding_box.getCollision(entity.bounding_box);
+        if (!collision.isIntersecting) {return;}
+
+        collision.distance.div(2);
+
+        bounding_box.correctPosition(entity.bounding_box, collision);
+        transform.pos.set(bounding_box.getCenter(), 0);
+
+        entity.bounding_box.correctPosition(bounding_box, collision);
+        entity.transform.pos.set(entity.bounding_box.getCenter(), 0);
+    }
+
     public abstract void update(float delta, Window window, Camera camera, World world);
 
     public void render(Shader shader, Camera camera, World world) {
@@ -69,35 +99,8 @@ public abstract class Entity {
         shader.bind();
         shader.setUniform("sampler", 0);
         shader.setUniform("projection", transform.getProjection(target));
-        texture.bind(0);
-        model.render();
-    }
-
-    public static void initAsset() {
-        float[] vertices = new float[] {
-                -1f, 1f, 0,  // TOP LEFT     0
-                1f, 1f, 0,   // TOP RIGHT    1
-                1f, -1f, 0,  // BOTTOM RIGHT 2
-                -1f, -1f, 0, // BOTTOM LEFT  3
-        };
-
-        float[] texture = new float[] {
-                0, 0, // TOP LEFT
-                1, 0, // TOP RIGHT
-                1, 1, // BOTTOM RIGHT
-                0, 1  // BOTTOM LEFT
-        };
-
-        int[] indices = new int[] {
-                0, 1, 2,
-                0, 2, 3
-        };
-
-        model = new Model(vertices, texture, indices);
-    }
-
-    public static void deleteAsset() {
-        model = null;
+        animations[use_animation].bind(0);
+        Assets.getModel().render();
     }
 
     public float getSpeed() {

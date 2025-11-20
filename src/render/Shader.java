@@ -1,6 +1,7 @@
 package render;
 
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import utils.AppUtils;
 
@@ -69,6 +70,12 @@ public class Shader {
         value.get(buffer);
         if (location == -1) { return; }
         glUniformMatrix4fv(location, false, buffer);
+    }
+
+    public void setUniform(String name, Vector4f value) {
+        int location = glGetUniformLocation(program, name);
+        if (location == -1) { return; }
+        glUniform4f(location, value.x, value.y, value.z, value.w);
     }
 
     public void bind() {

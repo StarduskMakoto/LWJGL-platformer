@@ -2,6 +2,8 @@ package io;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.glfw.GLFWWindowSizeCallback;
+import org.lwjglx.debug.org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -12,6 +14,8 @@ public class Window {
 
     private int width, height;
     private boolean fullscreen;
+    private boolean hasResized;
+    private GLFWWindowSizeCallback windowSizeCallback;
 
     private Input input;
 
@@ -24,9 +28,23 @@ public class Window {
         });
     }
 
+    private void setLocalCallbacks() {
+        windowSizeCallback = new GLFWWindowSizeCallback() {
+            @Override
+            public void invoke(long window, int width, int height) {
+                Window.this.width = width;
+                Window.this.height = height;
+                Window.this.hasResized = true;
+            }
+        };
+
+        glfwSetWindowSizeCallback(window, windowSizeCallback);
+    }
+
     public Window() {
         setSize(600, 600);
         setFullscreen(false);
+        hasResized = false;
     }
 
     public void createWindow(String title) {
@@ -48,10 +66,14 @@ public class Window {
         }
 
         glfwShowWindow(window);
-
         glfwMakeContextCurrent(window);
 
         input = new Input(window);
+        setLocalCallbacks();
+    }
+
+    public void cleanUp() {
+        windowSizeCallback.close();
     }
 
     public void destroy() {
@@ -73,6 +95,7 @@ public class Window {
     }
 
     public void update() {
+        hasResized = false;
         input.update();
         glfwPollEvents();
     }
@@ -91,6 +114,10 @@ public class Window {
 
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    public boolean hasResized() {
+        return hasResized;
     }
 
     public boolean isFullscreen() {

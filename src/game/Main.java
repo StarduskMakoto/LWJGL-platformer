@@ -1,8 +1,10 @@
 package game;
 
+import assets.Assets;
 import entity.Entity;
 import entity.Player;
 import entity.Transform;
+import gui.Gui;
 import io.*;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -125,11 +127,14 @@ public class Main {
         glEnable(GL_TEXTURE_2D);
 
         TileRenderer tiles = new TileRenderer();
-        Entity.initAsset();
+        Assets.initAsset();
 
         Shader shader = new Shader("shader");
 
-        World world = new World("Level1Test");
+        World world = new World("Level1Test", camera);
+        world.calculateView(window);
+
+        Gui gui = new Gui(window);
 
 //        Transform p_transform = new Transform();
 //        p_transform.scale = new Vector3f(1, 2, 0);
@@ -161,6 +166,13 @@ public class Main {
             time = time_2;
 
             while (unprocessed >= frame_cap) {
+                if (window.hasResized()) {
+                    camera.setProjection(window.getWidth(), window.getHeight());
+                    world.calculateView(window);
+                    gui.resizeCamera(window);
+                    glViewport(0, 0, window.getWidth(), window.getHeight());
+                }
+
                 unprocessed -= frame_cap;
                 can_render = true;
                 //target = scale;
@@ -210,9 +222,11 @@ public class Main {
 
             world.correctCamera(camera, window);
 
-            world.render(tiles, shader, camera, window);
+            world.render(tiles, shader, camera);
 
             //player.render(shader, camera, world);
+
+            gui.render();
 
             frames++;
 
@@ -220,7 +234,7 @@ public class Main {
             //glfwSwapBuffers(window); // swap the color buffers
         }
 
-        Entity.deleteAsset();
+        Assets.deleteAsset();
     }
 
     private void handleInputs(Camera camera) {
