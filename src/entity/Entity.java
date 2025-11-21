@@ -75,6 +75,9 @@ public abstract class Entity {
                 transform.pos.set(bounding_box.getCenter(), 0);
             }
         }
+
+        //System.out.println("Player pos: [" + transform.pos.x + ", " + transform.pos.y + "]");
+        //System.out.println("Hitbox pos: [" + bounding_box.getCenter().x + ", " + bounding_box.getCenter().y + "]");
     }
 
     public void collideWithEntity(Entity entity) {
@@ -93,12 +96,12 @@ public abstract class Entity {
     public abstract void update(float delta, Window window, Camera camera, World world);
 
     public void render(Shader shader, Camera camera, World world) {
-        Matrix4f target = camera.getProjection();
-        target.mul(world.getWorldMatrix());
+        Matrix4f target = camera.getProjection(); // Projection Matrix
+        target.mul(world.getWorldMatrix()); // View Matrix
 
         shader.bind();
         shader.setUniform("sampler", 0);
-        shader.setUniform("projection", transform.getProjection(target));
+        shader.setUniform("projection", transform.getProjection(target)); // Projection * View * Model
         animations[use_animation].bind(0);
         Assets.getModel().render();
     }

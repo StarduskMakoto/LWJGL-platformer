@@ -38,7 +38,10 @@ public class World {
 
             width = tile_sheet.getWidth();
             height = tile_sheet.getHeight();
-            scale = 16;
+            scale = 32;
+
+            this.world = new Matrix4f().setTranslation(new Vector3f(0));
+            this.world.scale(scale);
 
             int[] colorTileSheet = tile_sheet.getRGB(0, 0, width, height,
                     null, 0, width);
@@ -103,9 +106,7 @@ public class World {
 //                    move(new Vector2f(5*delta, 0));
 //                }
 //            });
-
-            this.world = new Matrix4f().setTranslation(new Vector3f(0));
-            this.world.scale(scale);
+            //System.out.println(this.world.toString());
 
         } catch (IOException e) {
             e.printStackTrace();

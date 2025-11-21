@@ -3,6 +3,7 @@ package gui;
 import assets.Assets;
 import io.Window;
 import org.joml.Matrix4f;
+import org.joml.Vector2i;
 import org.joml.Vector4f;
 import render.Camera;
 import render.Shader;
@@ -16,7 +17,7 @@ public class Gui {
     public Gui(Window window) {
         shader = new Shader("gui");
         camera = new Camera(window.getWidth(), window.getHeight());
-        sheet = new SpriteSheet("CharacterWalkTest", 2);
+        sheet = new SpriteSheet("CharacterWalkTest", new Vector2i(4, 2));
     }
 
     public void resizeCamera(Window window) {
@@ -25,7 +26,7 @@ public class Gui {
 
     public void render() {
         Matrix4f mat = new Matrix4f();
-        camera.getProjection().scale(87, mat);
+        camera.getProjection().scale(32, 64, 0, mat);
         mat.translate(-2, 0, 0);
 
         shader.bind();

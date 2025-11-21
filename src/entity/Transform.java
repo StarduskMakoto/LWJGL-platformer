@@ -13,9 +13,11 @@ public class Transform {
     }
 
     public Matrix4f getProjection(Matrix4f target) {
+        //target.translate(pos);
+        target.mul(new Matrix4f().translate(pos.mul(1, 2, 1, new Vector3f())));
         target.scale(scale);
-        target.translate(pos);
 
+        //System.out.println(target.toString());
 
         return target;
     }

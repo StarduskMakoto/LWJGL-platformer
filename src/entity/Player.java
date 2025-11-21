@@ -54,9 +54,7 @@ public class Player extends Entity {
         this.move(movement);
 
 
-        Vector3f target = new Vector3f();
-        transform.scale.mul(world.getScale(), target);
 
-        camera.getPosition().lerp(transform.pos.mul(target.mul(-1, new Vector3f()), new Vector3f()), 0.05f);
+        camera.getPosition().lerp(transform.pos.mul(-world.getScale(), -world.getScale() * 2, -world.getScale(), new Vector3f()), 0.05f);
     }
 }

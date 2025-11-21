@@ -1,6 +1,8 @@
 package render;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
 
 public class SpriteSheet {
     private Texture texture;
@@ -8,12 +10,12 @@ public class SpriteSheet {
     private Matrix4f scale;
     private Matrix4f translation;
 
-    private int amountOfTiles;
+    private Vector2i amountOfTiles;
 
-    public SpriteSheet(String texture, int amountOfTiles) {
+    public SpriteSheet(String texture, Vector2i amountOfTiles) {
         this.texture = new Texture("SpriteSheets/" + texture + ".png");
 
-        scale = new Matrix4f().scale(1.0f/(float)amountOfTiles);
+        scale = new Matrix4f().scale(1.0f/(float)amountOfTiles.x, 1.0f/(float)amountOfTiles.y, 0);
         translation = new Matrix4f();
         this.amountOfTiles = amountOfTiles;
     }
@@ -29,8 +31,8 @@ public class SpriteSheet {
     }
 
     public void bindTile(Shader shader, int index) {
-        int x = index % amountOfTiles;
-        int y = index / amountOfTiles;
+        int x = index % amountOfTiles.x;
+        int y = index / amountOfTiles.y;
 
         bindTile(shader, x, y);
 
