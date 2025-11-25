@@ -39,6 +39,8 @@ public class Window {
         };
 
         glfwSetWindowSizeCallback(window, windowSizeCallback);
+
+
     }
 
     public Window() {

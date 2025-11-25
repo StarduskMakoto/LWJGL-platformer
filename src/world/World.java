@@ -38,7 +38,7 @@ public class World {
 
             width = tile_sheet.getWidth();
             height = tile_sheet.getHeight();
-            scale = 32;
+            scale = 16;
 
             this.world = new Matrix4f().setTranslation(new Vector3f(0));
             this.world.scale(scale);
@@ -75,7 +75,7 @@ public class World {
                     if(entity_alpha > 0) {
                         transform = new Transform();
                         transform.pos.x = x * 2;
-                        transform.pos.y = -y * 2;
+                        transform.pos.y = -y + 0.5f;
                         switch(entity_index) {
                             case 1:                 // Player
                                 transform.scale.y = 2;
@@ -89,24 +89,6 @@ public class World {
                     }
                 }
             }
-
-            //TODO
-//            Transform p_transform = new Transform();
-//            p_transform.scale = new Vector3f(1, 2, 0);
-//            entities.add(new Player(p_transform, new Vector2f(1)));
-
-//            Transform test_transform = new Transform();
-//            test_transform.scale = new Vector3f(1, 2, 0);
-//            test_transform.pos.set(5 * 2, -2, 0);
-//            entities.add(new Entity(1,
-//                    test_transform, new Vector2f(1)){
-//
-//                @Override
-//                public void update(float delta, Window window, Camera camera, World world) {
-//                    move(new Vector2f(5*delta, 0));
-//                }
-//            });
-            //System.out.println(this.world.toString());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -127,7 +109,7 @@ public class World {
 
     public void calculateView(Window window) {
         viewX = (window.getWidth() / (scale * 2)) + 2;
-        viewY = (window.getHeight() / (scale * 2)) + 2;
+        viewY = (window.getHeight() / (scale * 2)) + 3;
 
     }
 

@@ -20,6 +20,16 @@ public class AABB {
         return new Collision (distance, distance.x < 0 && distance.y < 0);
     }
 
+    public Collision getCollision(Vector2f point) {
+        Vector2f distance = point.sub(center, new Vector2f());
+        distance.x = Math.abs(distance.x);
+        distance.y = Math.abs(distance.y);
+
+        distance.sub(half_extent);
+
+        return new Collision(distance, distance.x < 0 && distance.y < 0);
+    }
+
     public void correctPosition(AABB box2, Collision data) {
         Vector2f correction = box2.center.sub(center, new Vector2f());
         if (data.distance.x > data.distance.y) {

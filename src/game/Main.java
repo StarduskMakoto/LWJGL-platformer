@@ -4,9 +4,11 @@ import assets.Assets;
 import entity.Entity;
 import entity.Player;
 import entity.Transform;
+import gui.Button;
 import gui.Gui;
 import io.*;
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
@@ -84,13 +86,12 @@ public class Main {
         world.calculateView(window);
 
         Gui gui = new Gui(window);
-
-//        Transform p_transform = new Transform();
-//        p_transform.scale = new Vector3f(1, 2, 0);
-//        Player player = new Player(p_transform, new Vector2f(1));
-
-        //world.setTile(Tile.test2, 0, 0);
-        //world.setTile(Tile.test2, 63, 63);
+        gui.appendElement(new Button(
+                new Vector2f(100, 0),
+                new Vector2f(128, 64),
+                "ButtonSheet",
+                new Vector2i(9, 3)
+        ));
 
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -124,13 +125,10 @@ public class Main {
 
                 unprocessed -= frame_cap;
                 can_render = true;
-                //target = scale;
-
-//                if (win.getInput().isKeyPressed(GLFW_KEY_ESCAPE)) {
-//                    System.out.println("ESCAPED!");
-//                }
 
                 handleInputs(camera);
+
+                gui.update(window, window.getInput());
 
 
                 // Poll for window events. The key callback above will only be
@@ -148,39 +146,17 @@ public class Main {
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-            //projection.rotate(-0.05f, 0, 0, 1);
-            //projection.mul(scale, target);
-
-//            shader.bind();
-//            shader.setUniform("sampler", 0);
-//            shader.setUniform("projection", camera.getProjection().mul(target));
-//            tex.bind(0);
-//            model.render();
-
-//            for(int i = 0; i < 8; i++) {
-//                for (int j = 0; j < 4; j++)
-//                {
-//                    tiles.renderTile((byte) 0, i, j, shader, scale, camera);
-//                }
-//            }
-
-            //camera.setPosition(new Vector3f(pos, 0));
-
-            //player.update((float) frame_cap, window, camera, world);
             world.update((float) frame_cap, window, camera);
 
             world.correctCamera(camera, window);
 
             world.render(tiles, shader, camera);
 
-            //player.render(shader, camera, world);
-
             gui.render();
 
             frames++;
 
             window.swapBuffers();
-            //glfwSwapBuffers(window); // swap the color buffers
         }
 
         Assets.deleteAsset();
@@ -190,23 +166,6 @@ public class Main {
         if (window.getInput().isKeyPressed(GLFW_KEY_ESCAPE)) {
             glfwSetWindowShouldClose(window.getWindow(), true); // We will detect this in the rendering loop
         }
-
-//        if (window.getInput().isKeyDown(GLFW_KEY_W)) {
-//            //pos.y -= STEP;
-//            camera.addPosition(new Vector3f(0, -STEP, 0));
-//        }
-//        if (window.getInput().isKeyDown(GLFW_KEY_A)) {
-//            //pos.x += STEP;
-//            camera.addPosition(new Vector3f(STEP, 0, 0));
-//        }
-//        if (window.getInput().isKeyDown(GLFW_KEY_S)) {
-//            //pos.y += STEP;
-//            camera.addPosition(new Vector3f(0, STEP, 0));
-//        }
-//        if (window.getInput().isKeyDown(GLFW_KEY_D)) {
-//            //pos.x -= STEP;
-//            camera.addPosition(new Vector3f(-STEP, 0, 0));
-//        }
 
     }
 
