@@ -25,7 +25,11 @@ public class AABB {
         distance.x = Math.abs(distance.x);
         distance.y = Math.abs(distance.y);
 
+        //System.out.println(point.x + ", " + point.y);
+
         distance.sub(half_extent);
+
+        //System.out.println("Pos: " + center.x + ", " + center.y + " | Mouse: " + point.x + ", " + point.y);
 
         return new Collision(distance, distance.x < 0 && distance.y < 0);
     }

@@ -22,7 +22,9 @@ public class Button extends GuiElement {
 
     public void render(Camera camera, Shader shader) {
         Vector2f position = bounding_box.getCenter();
-        Vector2f scale = bounding_box.getHalfExtent();
+        Vector2f scale = bounding_box.getHalfExtent(); //.mul(0.5f, new Vector2f());
+
+        //position = position.sub(scale.x, -scale.y*2.f, new Vector2f());
 
         transform.identity().translate(position.x, position.y, 0).scale(scale.x, scale.y, 1); // Fill
 

@@ -31,10 +31,14 @@ public class SpriteSheet {
     }
 
     public void bindTile(Shader shader, int index) {
-        int x = index % amountOfTiles.x;
-        int y = index / amountOfTiles.y;
+        int x = index % (amountOfTiles.x*amountOfTiles.y);
+        int y = index / (amountOfTiles.x*amountOfTiles.y);
 
         bindTile(shader, x, y);
 
+    }
+
+    public int getTileAmount() {
+        return amountOfTiles.x * amountOfTiles.y;
     }
 }

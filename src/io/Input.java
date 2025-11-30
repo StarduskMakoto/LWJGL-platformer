@@ -69,7 +69,11 @@ public class Input {
     }
 
     public static Vector2f getMousePosition(Window window) {
-        Vector2f result = mouse_pos.mul(2.f, new Vector2f()).sub(window.getWidth(), window.getHeight());
+        //Vector2f result = mouse_pos.mul(2.f, new Vector2f()).sub(window.getWidth(), window.getHeight());
+        Vector2f result = new Vector2f(mouse_pos);
+        result.x = result.x - (window.getWidth() / 2.f);
+        result.y = result.y - (window.getHeight() / 2.f);
+        result.y *= -1;
         return result;
     }
 

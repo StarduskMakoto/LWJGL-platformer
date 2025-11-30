@@ -203,4 +203,12 @@ public class World {
     public int getScale() {
         return scale;
     }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
 }

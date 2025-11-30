@@ -19,16 +19,21 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
 public abstract class Entity {
     protected AABB bounding_box;
     protected Animation[] animations;
-    private int use_animation;
+    protected int use_animation;
+
+    protected Vector3f spawn_pos;
 
     protected Transform transform;
     protected float SPEED = 10f;
+
+    protected boolean isAlive = true;
 
     public Entity(int max_animations, Transform transform, Vector2f hitbox) {
         this.animations = new Animation[max_animations];
         this.use_animation = 0;
 
         this.transform = transform;
+        spawn_pos = new Vector3f(transform.pos);
 
         bounding_box = new AABB(new Vector2f(transform.pos.x, transform.pos.y), hitbox);
     }
@@ -96,15 +101,22 @@ public abstract class Entity {
     public abstract void update(float delta, Window window, Camera camera, World world);
 
     public void render(Shader shader, Camera camera, World world) {
+        if (!isAlive) {return;}
+
         Matrix4f target = camera.getProjection(); // Projection Matrix
         target.mul(world.getWorldMatrix()); // View Matrix
 
         shader.bind();
         shader.setUniform("sampler", 0);
         shader.setUniform("projection", transform.getProjection(target)); // Projection * View * Model
-        animations[use_animation].bind(0);
+        animations[use_animation].bind(0, shader);
         Assets.getModel().render();
     }
+
+    public abstract void die(World world);
+
+    public abstract void respawn(World world);
+
 
     public float getSpeed() {
         return SPEED;

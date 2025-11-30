@@ -87,8 +87,8 @@ public class Main {
 
         Gui gui = new Gui(window);
         gui.appendElement(new Button(
-                new Vector2f(100, 0),
-                new Vector2f(128, 64),
+                new Vector2f(150, -200),
+                new Vector2f(64, 32),
                 "ButtonSheet",
                 new Vector2i(9, 3)
         ));
